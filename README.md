@@ -26,6 +26,7 @@ This web app helps you analyze your skin tone live using your webcam and classif
 ✅ Privacy-first: no data is sent anywhere  
 
 ## Fitzpatrick Scale
+![Fitzpatrick Scale](download.webp)
 
 | Type | Description |
 |:----:|:------------|
