@@ -105,9 +105,9 @@
 
     function classifyFitzpatrick(r, g, b) {
       const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-      if (brightness > 150) return "Type I: Very fair";
-      else if (brightness > 140) return "Type II: Fair";
-      else if (brightness > 120) return "Type III: Medium";
+      if (brightness > 160) return "Type I: Very fair";
+      else if (brightness > 150) return "Type II: Fair";
+      else if (brightness > 130) return "Type III: Medium";
       else if (brightness > 90) return "Type IV: Olive";
       else if (brightness > 60) return "Type V: Brown";
       else return "Type VI: Dark brown/Black";
