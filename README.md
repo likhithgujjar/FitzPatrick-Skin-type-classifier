@@ -75,9 +75,6 @@ _No external setup required!_
 
 > Tip: Ensure good lighting for better accuracy!
 
-## Demo
-
-_(Insert a GIF or screenshot here showing the detection process.)_
 
 ## Future Improvements
 
