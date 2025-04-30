@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Skin Type Detector</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skin Type Detector + Quiz</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -15,14 +15,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
       padding: 2rem;
     }
     h1 {
       font-size: 2rem;
       margin-bottom: 1rem;
-      color: #1f2937;
     }
     #container {
       position: relative;
@@ -33,7 +30,6 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     video, canvas {
-      border-radius: 0;
       display: block;
     }
     #overlayBox {
@@ -48,24 +44,20 @@
       pointer-events: none;
     }
     .result {
-      font-size: 1.1rem;
       margin-top: 1rem;
-      padding: 0.75rem 1rem;
+      padding: 1rem;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      color: #1f2937;
     }
     button {
       margin-top: 1rem;
       padding: 0.75rem 1.5rem;
-      font-size: 1rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       background-color: #3b82f6;
       color: white;
-      transition: background 0.3s ease;
     }
     button:hover {
       background-color: #2563eb;
@@ -76,6 +68,10 @@
     }
     #retakeBtn:hover {
       background-color: #d97706;
+    }
+    label {
+      display: block;
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -89,6 +85,7 @@
   <button id="captureBtn">📸 Capture</button>
   <button id="retakeBtn">🔄 Retake</button>
   <div class="result" id="result">Align your face inside the box, then tap Capture.</div>
+  <div id="quiz"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
@@ -99,15 +96,17 @@
     const resultDiv = document.getElementById('result');
     const captureBtn = document.getElementById('captureBtn');
     const retakeBtn = document.getElementById('retakeBtn');
+    const quizDiv = document.getElementById('quiz');
 
     let latestLandmarks = null;
     let cameraRunning = true;
+    let skinResult = "";
 
     function classifyFitzpatrick(r, g, b) {
       const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-      if (brightness > 160) return "Type I: Very fair";
-      else if (brightness > 150) return "Type II: Fair";
-      else if (brightness > 130) return "Type III: Medium";
+      if (brightness > 150) return "Type I: Very fair";
+      else if (brightness > 140) return "Type II: Fair";
+      else if (brightness > 120) return "Type III: Medium";
       else if (brightness > 90) return "Type IV: Olive";
       else if (brightness > 60) return "Type V: Brown";
       else return "Type VI: Dark brown/Black";
@@ -120,10 +119,7 @@
       return [pixel[0], pixel[1], pixel[2]];
     }
 
-    const faceMesh = new FaceMesh({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
-
+    const faceMesh = new FaceMesh({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
     faceMesh.setOptions({
       maxNumFaces: 1,
       refineLandmarks: true,
@@ -160,22 +156,91 @@
 
       const indices = [1, 10, 152, 234, 454];
       const colors = indices.map(idx => getColorFrom(latestLandmarks, idx));
+      const avgColor = colors.reduce((acc, [r, g, b]) => [acc[0]+r, acc[1]+g, acc[2]+b], [0,0,0]).map(v => Math.floor(v/colors.length));
+      skinResult = classifyFitzpatrick(...avgColor);
 
-      const avgColor = [0, 0, 0];
-      colors.forEach(([r, g, b]) => {
-        avgColor[0] += r;
-        avgColor[1] += g;
-        avgColor[2] += b;
-      });
-      avgColor[0] = Math.floor(avgColor[0] / colors.length);
-      avgColor[1] = Math.floor(avgColor[1] / colors.length);
-      avgColor[2] = Math.floor(avgColor[2] / colors.length);
-
-      const result = classifyFitzpatrick(...avgColor);
-      resultDiv.innerText = result;
+      resultDiv.innerText = skinResult;
       cameraRunning = false;
       captureBtn.style.display = 'none';
       retakeBtn.style.display = 'inline-block';
+
+      // Show Quiz
+      quizDiv.innerHTML = `
+        <form id="quizForm" style="margin-top:20px;">
+          <input type="text" name="name" placeholder="Enter your name" required style="width:100%;padding:8px;margin-bottom:10px;">
+          <input type="number" name="age" placeholder="Enter your age" min="1" required style="width:100%;padding:8px;margin-bottom:10px;">
+          <select name="gender" required style="width:100%;padding:8px;margin-bottom:10px;">
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <select name="skinType" required style="width:100%;padding:8px;margin-bottom:10px;">
+            <option value="">Select Skin Type</option>
+            <option>Oily</option>
+            <option>Dry</option>
+            <option>Normal</option>
+          </select>
+          <p>Previous skin issues?</p>
+          <label><input type="radio" name="history" value="yes" required> Yes</label>
+          <label><input type="radio" name="history" value="no" required> No</label>
+          <p>Want to consult specific issue?</p>
+          <label><input type="radio" name="consult" value="yes" required> Yes</label>
+          <label><input type="radio" name="consult" value="no" required> No</label>
+          <div id="issueBox" style="display:none;">
+            <input type="text" name="specificIssue" placeholder="Describe your issue..." style="width:100%;padding:8px;margin-top:10px;">
+          </div>
+          <button type="submit" style="margin-top:10px;background:#10b981;">Submit</button>
+        </form>`;
+
+      document.querySelectorAll('input[name="consult"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          document.getElementById('issueBox').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+      });
+
+      document.getElementById('quizForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => { data[key] = value; });
+        data["skinResult"] = skinResult;
+        data["imageBase64"] = canvas.toDataURL();
+
+        if (parseInt(data.age) <= 0 || isNaN(parseInt(data.age))) {
+          alert('Please enter a valid positive age.');
+          return;
+        }
+
+        fetch('https://script.google.com/macros/s/AKfycbyuwVMfHBsrXEDv9ZV0pgFhVScwtKgC5WVE_PPURPLbjyRL_hbUUgO643qCU_VY_Wbi/exec', {
+          redirect: "follow",
+  method: 'POST',
+  body: JSON.stringify(data),
+  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+})
+
+.then(response => response.text())
+.then(responseText => {
+  try {
+    const parsed = JSON.parse(responseText);
+    if (parsed.status === "success") {
+      alert('Form submitted successfully!');
+      document.getElementById('quizForm').reset();
+      quizDiv.innerHTML = '';
+    } else {
+      alert('Submission failed. Please try again.');
+    }
+  } catch (e) {
+    console.error('Invalid response:', responseText);
+    alert('Submission failed. Please try again.');
+  }
+})
+
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error submitting form. Please check your connection.');
+        });
+      });
     };
 
     retakeBtn.onclick = () => {
@@ -183,6 +248,7 @@
       resultDiv.innerText = "Align your face inside the box, then tap Capture.";
       captureBtn.style.display = 'inline-block';
       retakeBtn.style.display = 'none';
+      quizDiv.innerHTML = '';
     };
   </script>
 </body>
