@@ -80,8 +80,8 @@ video, canvas {
 
 #overlayBox {
   position: absolute;
-  width: 300px;
-  height: 250px;
+  width: 70%;
+  height: 70%;
   border: 3px dashed #10b981;
   top: 30%;
   left: 50%;
