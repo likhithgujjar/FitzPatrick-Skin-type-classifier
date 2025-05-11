@@ -80,10 +80,10 @@ video, canvas {
 
 #overlayBox {
   position: absolute;
-  width: 180px;
-  height: 220px;
+  width: 300px;
+  height: 250px;
   border: 3px dashed #10b981;
-  top: 25%;
+  top: 30%;
   left: 50%;
   transform: translate(-50%, -25%);
   z-index: 2;
