@@ -15,17 +15,17 @@ function classifyFitzpatrick(r, g, b) {
 
   let introText = "Based on your detected skin type, here are some personalized skincare insights tailored just for you. These are derived from your skin's natural response to sun exposure and pigmentation.";
 
-  if (brightness > 150) {
+  if (brightness > 200) {
     return {
       label: "Type I: Very fair",
       description: `${introText}\n\n• ☀️ Extremely sensitive to sunlight – sunburns happen fast!\n• 🧴 Always use a strong SPF 50+ sunscreen.\n• 🧬 Your skin has very little melanin, which means almost no tanning ability.\n• 👩‍🦰 Common features: freckles, red or blonde hair, light eyes.\n\n📝 Tip: Carry a hat and sunglasses when outdoors. UV protection is your best friend!`,
     };
-  } else if (brightness > 140) {
+  } else if (brightness > 180) {
     return {
       label: "Type II: Fair",
       description: `${introText}\n\n• 🌤️ High risk of sunburn – protect yourself early.\n• 🧴 Use a high SPF (30–50) even on cloudy days.\n• 🧬 Your skin has a little melanin but still struggles to tan.\n• 👱‍♀️ Common traits: light hair, blue/green eyes.\n\n📝 Tip: Moisturize daily and consider adding vitamin C serum for glow!`,
     };
-  } else if (brightness > 120) {
+  } else if (brightness > 130) {
     return {
       label: "Type III: Medium",
       description: `${introText}\n\n• 🌞 Moderate risk of sunburn – especially after long exposure.\n• 🧴 SPF 30 is generally enough, reapply if staying out long.\n• 🧬 You have a balanced melanin level, so you can tan slowly.\n• 👩 Common traits: brown hair, hazel eyes.\n\n📝 Tip: Exfoliate weekly to maintain brightness and prevent patchy tanning.`,
@@ -35,7 +35,7 @@ function classifyFitzpatrick(r, g, b) {
       label: "Type IV: Olive",
       description: `${introText}\n\n• 🌅 Tans easily and rarely burns.\n• 🧴 Use SPF 15–30 to avoid long-term sun damage.\n• 🧬 Richer melanin means better natural protection.\n• 👩🏽‍🦰 Common traits: dark hair and eyes, warm undertones.\n\n📝 Tip: Consider antioxidants in your skincare to prevent pigmentation over time.`,
     };
-  } else if (brightness > 60) {
+  } else if (brightness > 40) {
     return {
       label: "Type V: Brown",
       description: `${introText}\n\n• ☀️ Almost never burns, tans beautifully.\n• 🧴 Still use SPF 15–30 to protect from aging and dark spots.\n• 🧬 You have high melanin, offering strong UV defense.\n• 🌏 Common among Southeast Asian and Middle Eastern skin tones.\n\n📝 Tip: Hydration is key—opt for gel-based moisturizers and brightening serums.`,
@@ -68,22 +68,48 @@ faceMesh.setOptions({
 faceMesh.onResults(results => {
   if (!cameraRunning) return;
   if (results.multiFaceLandmarks.length > 0) {
-    latestLandmarks = results.multiFaceLandmarks[0];
-    resultDiv.innerText = "Face aligned! Tap Capture to analyze.";
+  latestLandmarks = results.multiFaceLandmarks[0];
+
+  // Check full face visibility using left (234) and right (454) cheek landmarks
+  const leftX = latestLandmarks[234].x;
+  const rightX = latestLandmarks[454].x;
+  const faceWidth = Math.abs(rightX - leftX);
+
+  // Heuristic: if width < 0.2, assume incomplete face
+  if (faceWidth < 0.2) {
+    resultDiv.innerText = "⚠️ Please align your full face in the frame.";
+    latestLandmarks = null; // prevent capture
   } else {
-    latestLandmarks = null;
-    resultDiv.innerText = "Align your face inside the box, then tap Capture.";
+    resultDiv.innerText = "Face aligned! Tap Capture to analyze.";
   }
+} else {
+  latestLandmarks = null;
+  resultDiv.innerText = "Align your face inside the box, then tap Capture.";
+}
+
 });
 
-const camera = new Camera(video, {
-  onFrame: async () => {
-    if (cameraRunning) await faceMesh.send({ image: video });
-  },
-  width: 360,
-  height: 270
-});
-camera.start();
+// Check for camera permission and availability first
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then((stream) => {
+    // Permission granted - proceed to set up the camera
+    const camera = new Camera(video, {
+      onFrame: async () => {
+        await faceMesh.send({ image: video });
+      },
+      width: 640,
+      height: 480,
+    });
+    camera.start();
+  })
+  .catch((err) => {
+    console.error("Camera access error:", err);
+    resultDiv.innerText = "🚫 Camera not found. Check your permissions.";
+    captureBtn.disabled = true;
+    captureBtn.style.opacity = "0.5";
+    captureBtn.style.cursor = "not-allowed";
+  });
+
 
 captureBtn.onclick = () => {
   if (!latestLandmarks) {
@@ -232,9 +258,21 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
 };
 
 retakeBtn.onclick = () => {
+  // Restart camera logic
   cameraRunning = true;
   resultDiv.innerText = "Align your face inside the box, then tap Capture.";
+  
+  // Show Capture Button again
   captureBtn.style.display = 'inline-block';
   retakeBtn.style.display = 'none';
+
+  // Clear previous result and quiz
+  quizDiv.hidden = false;
+  quizDiv.style.visibility = 'visible';
   quizDiv.innerHTML = '';
+
+  resultDiv.innerHTML = '';
+
+  // Optionally clear canvas too
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
