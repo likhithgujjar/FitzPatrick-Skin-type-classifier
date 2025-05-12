@@ -15,12 +15,12 @@ function classifyFitzpatrick(r, g, b) {
 
   let introText = "Based on your detected skin type, here are some personalized skincare insights tailored just for you. These are derived from your skin's natural response to sun exposure and pigmentation.";
 
-  if (brightness > 200) {
+  if (brightness > 150) {
     return {
       label: "Type I: Very fair",
       description: `${introText}\n\n• ☀️ Extremely sensitive to sunlight – sunburns happen fast!\n• 🧴 Always use a strong SPF 50+ sunscreen.\n• 🧬 Your skin has very little melanin, which means almost no tanning ability.\n• 👩‍🦰 Common features: freckles, red or blonde hair, light eyes.\n\n📝 Tip: Carry a hat and sunglasses when outdoors. UV protection is your best friend!`,
     };
-  } else if (brightness > 180) {
+  } else if (brightness > 140) {
     return {
       label: "Type II: Fair",
       description: `${introText}\n\n• 🌤️ High risk of sunburn – protect yourself early.\n• 🧴 Use a high SPF (30–50) even on cloudy days.\n• 🧬 Your skin has a little melanin but still struggles to tan.\n• 👱‍♀️ Common traits: light hair, blue/green eyes.\n\n📝 Tip: Moisturize daily and consider adding vitamin C serum for glow!`,
@@ -40,7 +40,7 @@ function classifyFitzpatrick(r, g, b) {
       label: "Type V: Brown",
       description: `${introText}\n\n• ☀️ Almost never burns, tans beautifully.\n• 🧴 Still use SPF 15–30 to protect from aging and dark spots.\n• 🧬 You have high melanin, offering strong UV defense.\n• 🌏 Common among Southeast Asian and Middle Eastern skin tones.\n\n📝 Tip: Hydration is key—opt for gel-based moisturizers and brightening serums.`,
     };
-  } else if(brightness>40){
+  } else {
     return {
       label: "Type VI: Dark brown/Black",
       description: `${introText}\n\n• 🌞 Highly resistant to sunburn.\n• 🧴 SPF 15–30 is still essential to prevent hyperpigmentation and premature aging.\n• 🧬 Very high melanin levels give your skin its rich tone and strong natural sun shield.\n• 🌍 Common in African and Afro-Caribbean descent.\n\n📝 Tip: Even skin tone care is important—look for niacinamide or kojic acid-based products.`,
@@ -88,6 +88,7 @@ faceMesh.onResults(results => {
 }
 
 });
+
 
 // Check for camera permission and availability first
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -214,6 +215,9 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
   // Submission handler
   quizForm.addEventListener('submit', function (e) {
     e.preventDefault();
+    document.getElementById('loadingMessage').style.display = 'block'; // Show loading
+submitBtn.disabled = true; // Prevent double submission
+
     const formData = new FormData(this);
     const data = {};
     formData.forEach((value, key) => { data[key] = value; });
@@ -224,6 +228,8 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
       alert('Please enter a valid positive age.');
       return;
     }
+
+    
 
     fetch('https://script.google.com/macros/s/AKfycbzrlzTv4g7KPp9h-UR0-ldTljZpc8512YrqYNY_67aIeRj2fhZ-BSfbfqSuwGyc3HpDbQ/exec', {
       redirect: "follow",
@@ -236,6 +242,7 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
         try {
           const parsed = JSON.parse(responseText);
           if (parsed.status === "success") {
+            document.getElementById('loadingMessage').style.display = 'none'; 
             resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><pre style="text-align:left; white-space:pre-wrap;">${resultData.description}</pre>`;
             alert('Form submitted successfully!');
             document.getElementById('quizForm').reset();
@@ -255,6 +262,9 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
         alert('Error submitting form. Please check your connection.');
       });
   });
+
+
+
 };
 
 retakeBtn.onclick = () => {
