@@ -25,7 +25,7 @@ function classifyFitzpatrick(r, g, b) {
       label: "Type II: Fair",
       description: `${introText}\n\n• 🌤️ High risk of sunburn – protect yourself early.\n• 🧴 Use a high SPF (30–50) even on cloudy days.\n• 🧬 Your skin has a little melanin but still struggles to tan.\n• 👱‍♀️ Common traits: light hair, blue/green eyes.\n\n📝 Tip: Moisturize daily and consider adding vitamin C serum for glow!`,
     };
-  } else if (brightness > 130) {
+  } else if (brightness > 110) {
     return {
       label: "Type III: Medium",
       description: `${introText}\n\n• 🌞 Moderate risk of sunburn – especially after long exposure.\n• 🧴 SPF 30 is generally enough, reapply if staying out long.\n• 🧬 You have a balanced melanin level, so you can tan slowly.\n• 👩 Common traits: brown hair, hazel eyes.\n\n📝 Tip: Exfoliate weekly to maintain brightness and prevent patchy tanning.`,
