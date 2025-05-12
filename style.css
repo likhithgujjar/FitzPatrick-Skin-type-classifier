@@ -54,6 +54,12 @@ h2 {
   font-weight: bold;
   font-size: 2.5rem;
   text-align: center;
+
+}
+
+h3{
+  font-size: 2rem;
+  text-align: center;
 }
 
 /* Container styles */
@@ -80,10 +86,10 @@ video, canvas {
 
 #overlayBox {
   position: absolute;
-  width: 70%;
-  height: 70%;
+  width: 180px;
+  height: 220px;
   border: 3px dashed #10b981;
-  top: 30%;
+  top: 25%;
   left: 50%;
   transform: translate(-50%, -25%);
   z-index: 2;
