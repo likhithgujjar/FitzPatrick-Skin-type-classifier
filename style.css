@@ -248,3 +248,32 @@ button[type="submit"]:enabled:hover {
 video {
   transform: scaleX(-1); /* real (non-mirrored) camera view */
 }
+
+
+#loadingMessage {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.spinner {
+  margin: 10px auto;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #4CAF50;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 16px;
+  color: #333;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
