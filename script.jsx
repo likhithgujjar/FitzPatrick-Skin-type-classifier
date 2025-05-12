@@ -35,12 +35,12 @@ function classifyFitzpatrick(r, g, b) {
       label: "Type IV: Olive",
       description: `${introText}\n\n• 🌅 Tans easily and rarely burns.\n• 🧴 Use SPF 15–30 to avoid long-term sun damage.\n• 🧬 Richer melanin means better natural protection.\n• 👩🏽‍🦰 Common traits: dark hair and eyes, warm undertones.\n\n📝 Tip: Consider antioxidants in your skincare to prevent pigmentation over time.`,
     };
-  } else if (brightness > 40) {
+  } else if (brightness > 60) {
     return {
       label: "Type V: Brown",
       description: `${introText}\n\n• ☀️ Almost never burns, tans beautifully.\n• 🧴 Still use SPF 15–30 to protect from aging and dark spots.\n• 🧬 You have high melanin, offering strong UV defense.\n• 🌏 Common among Southeast Asian and Middle Eastern skin tones.\n\n📝 Tip: Hydration is key—opt for gel-based moisturizers and brightening serums.`,
     };
-  } else {
+  } else if(brightness>40){
     return {
       label: "Type VI: Dark brown/Black",
       description: `${introText}\n\n• 🌞 Highly resistant to sunburn.\n• 🧴 SPF 15–30 is still essential to prevent hyperpigmentation and premature aging.\n• 🧬 Very high melanin levels give your skin its rich tone and strong natural sun shield.\n• 🌍 Common in African and Afro-Caribbean descent.\n\n📝 Tip: Even skin tone care is important—look for niacinamide or kojic acid-based products.`,
