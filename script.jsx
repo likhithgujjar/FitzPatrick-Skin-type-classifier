@@ -15,12 +15,12 @@ function classifyFitzpatrick(r, g, b) {
 
   let introText = "Based on your detected skin type, here are some personalized skincare insights tailored just for you. These are derived from your skin's natural response to sun exposure and pigmentation.";
 
-  if (brightness > 200) {
+  if (brightness > 1700) {
     return {
       label: "Type I: Very fair",
       description: `${introText}\n\n• ☀️ Extremely sensitive to sunlight – sunburns happen fast!\n• 🧴 Always use a strong SPF 50+ sunscreen.\n• 🧬 Your skin has very little melanin, which means almost no tanning ability.\n• 👩‍🦰 Common features: freckles, red or blonde hair, light eyes.\n\n📝 Tip: Carry a hat and sunglasses when outdoors. UV protection is your best friend!`,
     };
-  } else if (brightness > 180) {
+  } else if (brightness > 150) {
     return {
       label: "Type II: Fair",
       description: `${introText}\n\n• 🌤️ High risk of sunburn – protect yourself early.\n• 🧴 Use a high SPF (30–50) even on cloudy days.\n• 🧬 Your skin has a little melanin but still struggles to tan.\n• 👱‍♀️ Common traits: light hair, blue/green eyes.\n\n📝 Tip: Moisturize daily and consider adding vitamin C serum for glow!`,
@@ -176,6 +176,8 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
           </div>
           <label class="block mb-2 font-semibold" for="contact">Contact Number <span class="text-red-500">*</span></label>
           <input type="tel" id="contact" name="contact" required class="w-full px-3 py-2 border border-gray-300 rounded mb-4" placeholder="Enter your contact number" />  
+          <span id="contactError" class="text-red-500 text-sm hidden">Please enter a valid 10-digit contact number.</span>
+
           <label class="block mb-2 font-semibold" for="email">Email ID (Optional)</label>
           <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded mb-4" placeholder="Enter your email" />
           <button type="submit" disabled>Submit</button>
@@ -193,21 +195,39 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
   const submitBtn = document.querySelector('button[type="submit"]'); // Fix the submit button reference
 
   // Validation function
-  function checkFormCompletion() {
-    const name = quizForm.elements["name"].value.trim();
-    const age = quizForm.elements["age"].value.trim();
-    const gender = quizForm.elements["gender"].value;
-    const skinType = quizForm.elements["skinType"].value;
-    const history = quizForm.querySelector('input[name="history"]:checked');
-    const consult = quizForm.querySelector('input[name="consult"]:checked');
-    const consultValue = consult ? consult.value : null;
-    const specificIssue = quizForm.elements["specificIssue"]?.value.trim();
+function checkFormCompletion() {
+  const contactInput = quizForm.elements["contact"];
+  const contactError = document.getElementById("contactError");
 
-    const allFilled = name && age && gender && skinType && history && consult &&
-      (consultValue === 'no' || (consultValue === 'yes' && specificIssue));
-
-    submitBtn.disabled = !allFilled;
+  function isValidContactNumber(number) {
+    return /^\d{10}$/.test(number.trim());
   }
+
+  const name = quizForm.elements["name"].value.trim();
+  const age = quizForm.elements["age"].value.trim();
+  const gender = quizForm.elements["gender"].value;
+  const skinType = quizForm.elements["skinType"].value;
+  const history = quizForm.querySelector('input[name="history"]:checked');
+  const consult = quizForm.querySelector('input[name="consult"]:checked');
+  const contact = contactInput.value.trim();
+  const consultValue = consult ? consult.value : null;
+  const specificIssue = quizForm.elements["specificIssue"]?.value.trim();
+
+  // Contact number validation
+  const contactValid = isValidContactNumber(contact);
+  if (!contactValid) {
+    contactError.classList.remove("hidden");
+  } else {
+    contactError.classList.add("hidden");
+  }
+
+  const allFilled = name && age && gender && skinType && history && consult &&
+    contactValid &&
+    (consultValue === 'no' || (consultValue === 'yes' && specificIssue));
+
+  submitBtn.disabled = !allFilled;
+}
+
 
   // Attach listeners to all form inputs
   quizForm.querySelectorAll('input, select, textarea').forEach(input => {
