@@ -40,7 +40,7 @@ function classifyFitzpatrick(r, g, b) {
       label: "Type V: Brown",
       description: `${introText}\n\n• ☀️ Almost never burns, tans beautifully.\n• 🧴 Still use SPF 15–30 to protect from aging and dark spots.\n• 🧬 You have high melanin, offering strong UV defense.\n• 🌏 Common among Southeast Asian and Middle Eastern skin tones.\n\n📝 Tip: Hydration is key—opt for gel-based moisturizers and brightening serums.`,
     };
-  } else if(brightness > 40){
+  } else if (brightness > 40){
     return {
       label: "Type VI: Dark brown/Black",
       description: `${introText}\n\n• 🌞 Highly resistant to sunburn.\n• 🧴 SPF 15–30 is still essential to prevent hyperpigmentation and premature aging.\n• 🧬 Very high melanin levels give your skin its rich tone and strong natural sun shield.\n• 🌍 Common in African and Afro-Caribbean descent.\n\n📝 Tip: Even skin tone care is important—look for niacinamide or kojic acid-based products.`,
@@ -174,7 +174,10 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
           <div id="issueBox" style="display:none;">
             <input type="text" name="specificIssue" placeholder="Describe your issue..." />
           </div>
-
+          <label class="block mb-2 font-semibold" for="contact">Contact Number <span class="text-red-500">*</span></label>
+          <input type="tel" id="contact" name="contact" required class="w-full px-3 py-2 border border-gray-300 rounded mb-4" placeholder="Enter your contact number" />  
+          <label class="block mb-2 font-semibold" for="email">Email ID (Optional)</label>
+          <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded mb-4" placeholder="Enter your email" />
           <button type="submit" disabled>Submit</button>
         </form>`;
 
@@ -215,7 +218,8 @@ resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><p>Submit the be
   // Submission handler
   quizForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    document.getElementById('loadingMessage').style.display = 'block'; // Show loading
+    document.getElementById("loadingMessage").style.display = "flex";
+
 submitBtn.disabled = true; // Prevent double submission
 
     const formData = new FormData(this);
@@ -229,9 +233,9 @@ submitBtn.disabled = true; // Prevent double submission
       return;
     }
 
-    
+    console.log(data);
 
-    fetch('https://script.google.com/macros/s/AKfycbzrlzTv4g7KPp9h-UR0-ldTljZpc8512YrqYNY_67aIeRj2fhZ-BSfbfqSuwGyc3HpDbQ/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbxg-OW7wRA88pKOBFDQbpwKoFALVp_YIc3OwmmLMy-62hiyz-0t9avrn0ZeynglYRn6Xw/exec', {
       redirect: "follow",
       method: 'POST',
       body: JSON.stringify(data),
@@ -242,7 +246,7 @@ submitBtn.disabled = true; // Prevent double submission
         try {
           const parsed = JSON.parse(responseText);
           if (parsed.status === "success") {
-            document.getElementById('loadingMessage').style.display = 'none'; 
+            document.getElementById("loadingMessage").style.display = "none";
             resultDiv.innerHTML = `<strong>${resultData.label}</strong><br/><pre style="text-align:left; white-space:pre-wrap;">${resultData.description}</pre>`;
             alert('Form submitted successfully!');
             document.getElementById('quizForm').reset();
