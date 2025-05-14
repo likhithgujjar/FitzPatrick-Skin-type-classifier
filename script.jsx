@@ -15,12 +15,12 @@ function classifyFitzpatrick(r, g, b) {
 
   let introText = "Based on your detected skin type, here are some personalized skincare insights tailored just for you. These are derived from your skin's natural response to sun exposure and pigmentation.";
 
-  if (brightness > 1700) {
+  if (brightness > 200) {
     return {
       label: "Type I: Very fair",
       description: `${introText}\n\n• ☀️ Extremely sensitive to sunlight – sunburns happen fast!\n• 🧴 Always use a strong SPF 50+ sunscreen.\n• 🧬 Your skin has very little melanin, which means almost no tanning ability.\n• 👩‍🦰 Common features: freckles, red or blonde hair, light eyes.\n\n📝 Tip: Carry a hat and sunglasses when outdoors. UV protection is your best friend!`,
     };
-  } else if (brightness > 150) {
+  } else if (brightness > 180) {
     return {
       label: "Type II: Fair",
       description: `${introText}\n\n• 🌤️ High risk of sunburn – protect yourself early.\n• 🧴 Use a high SPF (30–50) even on cloudy days.\n• 🧬 Your skin has a little melanin but still struggles to tan.\n• 👱‍♀️ Common traits: light hair, blue/green eyes.\n\n📝 Tip: Moisturize daily and consider adding vitamin C serum for glow!`,
